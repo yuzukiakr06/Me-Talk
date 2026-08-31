@@ -1,0 +1,13 @@
+.git/
+.github/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.cache/
+.DS_Store
+data/mirai_chat.db
+config.json
+cloudflared_token.txt
+data/uploads/

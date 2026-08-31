@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Me Talk 動作確認</title>
+<style>
+body { font-family: sans-serif; max-width: 480px; margin: 40px auto; padding: 0 16px; }
+fieldset { margin-bottom: 24px; padding: 16px; }
+input { display: block; width: 100%; margin: 6px 0 12px; padding: 8px; box-sizing: border-box; }
+button { padding: 8px 16px; cursor: pointer; }
+pre { background: #f0f0f0; padding: 12px; white-space: pre-wrap; word-break: break-all; }
+</style>
+</head>
+<body>
+<h1>Me Talk 動作確認</h1>
+
+<fieldset>
+<legend>1. 確認コード送信</legend>
+<input id="code-email" placeholder="メールアドレス">
+<select id="code-purpose">
+<option value="register">register</option>
+</select>
+<button onclick="requestCode()">コード送信</button>
+</fieldset>
+
+<fieldset>
+<legend>2. 会員登録</legend>
+<input id="reg-username" placeholder="ユーザー名">
+<input id="reg-email" placeholder="メールアドレス">
+<input id="reg-password" type="password" placeholder="パスワード">
+<input id="reg-code" placeholder="確認コード">
+<label><input id="reg-terms" type="checkbox" style="display:inline;width:auto"> 利用規約に同意する</label>
+<button onclick="register()">登録</button>
+</fieldset>
+
+<fieldset>
+<legend>3. ログイン</legend>
+<input id="login-email" placeholder="メールアドレス">
+<input id="login-password" type="password" placeholder="パスワード">
+<input id="login-code" placeholder="確認コード(新規端末の場合)">
+<button onclick="login()">ログイン</button>
+</fieldset>
+
+<fieldset>
+<legend>4. 自分の情報 / ログアウト</legend>
+<button onclick="me()">/me を取得</button>
+<button onclick="logout()">ログアウト</button>
+</fieldset>
+
+<h3>結果</h3>
+<pre id="result"></pre>
+
+<script>
+const out = document.getElementById("result");
+
+async function call(path, options) {
+    const res = await fetch(path, Object.assign({ credentials: "include" }, options));
+    let body;
+    try { body = await res.json(); } catch (e) { body = await res.text(); }
+    out.textContent = `${res.status}\n${JSON.stringify(body, null, 2)}`;
+    return body;
+}
+
+function requestCode() {
+    call("/api/auth/email-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: document.getElementById("code-email").value,
+            purpose: document.getElementById("code-purpose").value,
+        }),
+    });
+}
+
+function register() {
+    call("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            username: document.getElementById("reg-username").value,
+            email: document.getElementById("reg-email").value,
+            password: document.getElementById("reg-password").value,
+            email_code: document.getElementById("reg-code").value,
+            accepted_terms: document.getElementById("reg-terms").checked,
+        }),
+    });
+}
+
+function login() {
+    call("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: document.getElementById("login-email").value,
+            password: document.getElementById("login-password").value,
+            email_code: document.getElementById("login-code").value || null,
+        }),
+    });
+}
+
+function me() {
+    call("/api/auth/me", { method: "GET" });
+}
+
+function logout() {
+    call("/api/auth/logout", { method: "POST" });
+}
+</script>
+</body>
+</html>

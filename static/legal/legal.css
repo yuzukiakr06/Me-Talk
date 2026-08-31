@@ -1,0 +1,121 @@
+/* Me Talk 法的ページ共通スタイル。
+
+利用規約・プライバシーポリシーで共有する。アプリ本体と同じ配色に揃える。
+
+Dev yuzuki_akrdev.ofc
+*/
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #0b0f14;
+    color: #e6e9ef;
+    font-family: -apple-system, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    line-height: 1.9;
+}
+
+.lg-head {
+    background: #101820;
+    border-bottom: 3px solid #34d399;
+    padding: 26px 20px 22px;
+    text-align: center;
+}
+
+.lg-head img { width: 54px; height: 54px; }
+
+.lg-brand {
+    font-size: 23px;
+    font-weight: bold;
+    margin-top: 8px;
+    background: linear-gradient(100deg, #a3e635, #34d399, #22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.lg-doc { font-size: 13px; color: #6b9080; margin-top: 5px; }
+
+.lg-wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 60px; }
+
+.lg-meta {
+    font-size: 12px;
+    color: #6b7280;
+    border-bottom: 1px solid #1f2733;
+    padding-bottom: 16px;
+    margin-bottom: 26px;
+}
+
+.lg-intro { font-size: 14px; color: #cdd3dc; margin-bottom: 30px; }
+
+h2 {
+    font-size: 17px;
+    margin: 34px 0 12px;
+    padding-left: 12px;
+    border-left: 4px solid #34d399;
+    line-height: 1.5;
+}
+
+h3 { font-size: 14px; margin: 20px 0 8px; color: #22d3ee; }
+
+p { font-size: 14px; color: #cdd3dc; margin: 10px 0; }
+
+ul, ol { font-size: 14px; color: #cdd3dc; padding-left: 22px; }
+
+li { margin: 7px 0; }
+
+.lg-note {
+    background: #141b24;
+    border: 1px solid #232b36;
+    border-radius: 12px;
+    padding: 15px 18px;
+    margin: 18px 0;
+    font-size: 13px;
+    color: #b8c0cc;
+}
+
+.lg-note strong { color: #34d399; }
+
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
+
+th, td { border: 1px solid #232b36; padding: 10px 12px; text-align: left; vertical-align: top; }
+
+th { background: #141b24; color: #22d3ee; white-space: nowrap; }
+
+a { color: #34d399; }
+
+.lg-foot {
+    border-top: 1px solid #1f2733;
+    margin-top: 44px;
+    padding-top: 24px;
+    text-align: center;
+}
+
+.lg-foot .lf-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0.7;
+    margin-bottom: 14px;
+}
+
+.lg-foot .lf-logos img { height: 26px; width: auto; }
+
+.lg-foot .lf-sep { width: 1px; height: 20px; background: #2f3a48; }
+
+.lg-foot .lf-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: 13px; margin-bottom: 12px; }
+
+.lg-foot .lf-copy { font-size: 11px; color: #4b5563; }
+
+.lg-back {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 11px 26px;
+    border-radius: 10px;
+    background: linear-gradient(100deg, #34d399, #22d3ee);
+    color: #04140d;
+    font-weight: bold;
+    font-size: 14px;
+    text-decoration: none;
+}

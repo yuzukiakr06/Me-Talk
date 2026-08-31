@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+pydantic
+python-multipart
+requests
+websockets
+qrcode
+webauthn
+cryptography

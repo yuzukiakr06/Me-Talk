@@ -1,0 +1,38 @@
+# 秘密情報。絶対に公開しないこと
+config.json
+*.pem
+*.key
+cloudflared_token.txt
+ENCRYPTION_KEY.txt
+
+# 利用者のデータ
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/uploads/
+data/raw/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 配布物
+*.zip
+build/
+dist/
+
+# エディタと環境
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# ログ
+*.log
+logs/

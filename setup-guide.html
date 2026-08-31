@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Me Talk 起動ガイド（config.json + Cloudflareトンネル）</title>
+<style>
+  :root { --grn:#34d399; --cyan:#22d3ee; --lime:#a3e635; --bg:#0b0f14; --card:#141b24; --line:#232b36; --tx:#e6e9ef; --dim:#8b93a1; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--tx); font-family:-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif; line-height:1.7; }
+  .wrap { max-width:840px; margin:0 auto; padding:24px 18px 80px; }
+  header { text-align:center; padding:34px 0 24px; }
+  .logo-txt { font-size:30px; font-weight:800; background:linear-gradient(100deg,var(--lime),var(--grn),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .sub { color:var(--dim); font-size:14px; margin-top:6px; }
+  h2 { font-size:20px; margin:40px 0 14px; padding-left:12px; border-left:4px solid var(--grn); }
+  h3 { font-size:16px; margin:22px 0 8px; color:var(--cyan); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0; }
+  code, pre { font-family:"SF Mono",Consolas,monospace; }
+  pre { background:#0a0e13; border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow-x:auto; font-size:13px; color:#cde; }
+  .k { color:var(--cyan); }
+  .v { color:var(--lime); }
+  .cm { color:var(--dim); }
+  .step { display:flex; gap:14px; margin:16px 0; align-items:flex-start; }
+  .num { flex-shrink:0; width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--grn),var(--cyan)); color:#04140d; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .step-body { flex:1; padding-top:2px; }
+  .flow { display:flex; flex-direction:column; gap:0; margin:20px 0; }
+  .node { background:var(--card); border:2px solid var(--line); border-radius:12px; padding:14px 18px; text-align:center; position:relative; }
+  .node.hl { border-color:var(--grn); }
+  .node .t { font-weight:700; }
+  .node .d { font-size:12px; color:var(--dim); margin-top:3px; }
+  .arrow { text-align:center; color:var(--grn); font-size:22px; line-height:1; padding:6px 0; }
+  .tag { display:inline-block; background:rgba(34,211,238,0.14); color:var(--cyan); border-radius:8px; padding:1px 8px; font-size:12px; margin-left:6px; }
+  .warn { background:rgba(245,166,35,0.1); border:1px solid rgba(245,166,35,0.35); border-radius:10px; padding:12px 16px; font-size:13px; color:#f5c877; margin:12px 0; }
+  .ok { background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.35); border-radius:10px; padding:12px 16px; font-size:13px; color:#8fe; margin:12px 0; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+  th,td { border:1px solid var(--line); padding:9px 11px; text-align:left; }
+  th { background:#0f1620; color:var(--cyan); }
+  .mono-in { background:#0a0e13; border:1px solid var(--line); border-radius:6px; padding:2px 7px; color:var(--lime); font-family:monospace; font-size:13px; }
+  .diagram { background:#0a0e13; border:1px solid var(--line); border-radius:12px; padding:20px; margin:16px 0; }
+  .pill { display:inline-block; border:1px solid var(--line); border-radius:20px; padding:8px 14px; margin:4px; background:var(--card); font-size:13px; }
+  .box-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .b { border:2px solid var(--grn); border-radius:10px; padding:10px 14px; background:var(--card); font-size:13px; text-align:center; min-width:110px; }
+  .b .bt { font-weight:700; font-size:13px; }
+  .b .bd { color:var(--dim); font-size:11px; }
+  .harrow { color:var(--grn); font-size:20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo-txt">Me Talk 起動ガイド</div>
+  <div class="sub">config.json の作り方 と Cloudflare トンネルの設定を図で説明します</div>
+</header>
+
+<!-- 全体像 -->
+<h2>全体像：どうやって公開されるのか</h2>
+<div class="diagram">
+  <div class="box-row">
+    <div class="b"><div class="bt">スマホ / PC</div><div class="bd">利用者のブラウザ</div></div>
+    <span class="harrow">&rarr;</span>
+    <div class="b"><div class="bt">Cloudflare</div><div class="bd">me.mirai-vps.jp</div></div>
+    <span class="harrow">&rarr;</span>
+    <div class="b"><div class="bt">トンネル</div><div class="bd">cloudflared</div></div>
+    <span class="harrow">&rarr;</span>
+    <div class="b" style="border-color:var(--cyan)"><div class="bt">Me Talk</div><div class="bd">Discloud :8000</div></div>
+  </div>
+  <p style="text-align:center; color:var(--dim); font-size:13px; margin:16px 0 0;">
+    利用者は <span class="mono-in">me.mirai-vps.jp</span> にアクセス &rarr; Cloudflare がトンネル経由で
+    Discloud 上の Me Talk（ポート8000）につなぎます。<br>
+    <b>ポイント：</b>「トンネルのトークン」と「つなぎ先ポート(8000)」の2つを合わせるだけです。
+  </p>
+</div>
+
+<!-- PART 1 config.json -->
+<h2>PART 1：config.json を作る</h2>
+<p>ZIP の中の <span class="mono-in">config.json.example</span> をコピーして <span class="mono-in">config.json</span> に名前を変え、中身を書き換えます。</p>
+
+<div class="card">
+<h3>最小構成（まずこれで起動できます）</h3>
+<pre><span class="cm">{</span>
+  <span class="k">"SITE_NAME"</span>: <span class="v">"Me Talk"</span>,
+  <span class="k">"BASE_URL"</span>: <span class="v">"https://me.mirai-vps.jp"</span>,
+  <span class="k">"DATABASE_URL"</span>: <span class="v">"sqlite:///./data/mirai_chat.db"</span>,
+  <span class="k">"APP_PORT"</span>: <span class="v">"8000"</span>,          <span class="cm">// ← cloudflaredのつなぎ先と合わせる</span>
+  <span class="k">"CLOUDFLARED_TOKEN"</span>: <span class="v">"eyJh...（PART2で取得）"</span>,
+  <span class="k">"HIDE_DEV_CODES"</span>: <span class="v">"0"</span>       <span class="cm">// 0=確認コードをログに出す(テスト用)</span>
+<span class="cm">}</span></pre>
+</div>
+
+<div class="ok"><b>APP_PORT を 8000 にしておくと</b>、アプリは必ず 8000 番で起動します。
+Cloudflare 側のつなぎ先も 8000 にすればピッタリ合います（ここがズレると 502 になります）。</div>
+
+<div class="card">
+<h3>各項目の意味</h3>
+<table>
+  <tr><th>項目</th><th>何を書く</th><th>空でもいい？</th></tr>
+  <tr><td>SITE_NAME</td><td>アプリ名</td><td>—</td></tr>
+  <tr><td>BASE_URL</td><td>公開URL <span class="mono-in">https://me.mirai-vps.jp</span></td><td>—</td></tr>
+  <tr><td>APP_PORT</td><td><span class="mono-in">8000</span> 固定推奨</td><td>—</td></tr>
+  <tr><td>CLOUDFLARED_TOKEN</td><td>トンネルのトークン（PART2）</td><td>空だと非公開で起動</td></tr>
+  <tr><td>SMTP_*</td><td>メール送信設定</td><td>◎ 空でOK（コードはログに出る）</td></tr>
+  <tr><td>GOOGLE_*</td><td>Googleログイン</td><td>◎ 空でOK（ボタン無効になるだけ）</td></tr>
+  <tr><td>ANTHROPIC_API_KEY</td><td>Mirei(AI)のAPIキー</td><td>◎ 空でOK（AIだけ無効）</td></tr>
+</table>
+</div>
+
+<div class="warn"><b>注意：</b>Discloud に手動アップロードする ZIP には <b>config.json を必ず入れて</b>ください。
+（.discloudignore に config.json があるのは Git 用の除外設定で、手動アップの ZIP には含めて構いません。含めないと秘密情報が読み込まれません）</div>
+
+<!-- PART 2 cloudflare -->
+<h2>PART 2：Cloudflare トンネルを作る</h2>
+<p>MIRAI ID と同じ「トークン方式」です。Cloudflare のダッシュボードで Me Talk 用のトンネルを1つ作ります。</p>
+
+<div class="step">
+  <div class="num">1</div>
+  <div class="step-body">
+    <b>Zero Trust ダッシュボードを開く</b><br>
+    <span class="mono-in">one.dash.cloudflare.com</span> &rarr; 左メニュー <b>Networks</b> &rarr; <b>Tunnels</b>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">2</div>
+  <div class="step-body">
+    <b>「Create a tunnel」を押す</b><br>
+    タイプは <b>Cloudflared</b> を選択 &rarr; 名前を <span class="mono-in">me-talk</span> にして保存
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">3</div>
+  <div class="step-body">
+    <b>トークンをコピーする</b><br>
+    「Install and run a connector」の画面に、<span class="mono-in">cloudflared ... run --token <b>eyJ...</b></span>
+    という長い文字列が出ます。この <b>eyJ で始まる部分（トークン）</b>だけをコピー。<br>
+    <span class="cm">→ これを config.json の CLOUDFLARED_TOKEN に貼ります。</span>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">4</div>
+  <div class="step-body">
+    <b>Public Hostname を設定する</b>（ここが一番大事）<br>
+    トンネルの <b>Public Hostname</b> タブ &rarr; <b>Add a public hostname</b>
+  </div>
+</div>
+
+<div class="diagram">
+  <div style="font-weight:700; margin-bottom:12px; color:var(--cyan);">Public Hostname の入力内容</div>
+  <table>
+    <tr><th>項目</th><th>入れる値</th></tr>
+    <tr><td>Subdomain</td><td><span class="mono-in">me</span></td></tr>
+    <tr><td>Domain</td><td><span class="mono-in">mirai-vps.jp</span></td></tr>
+    <tr><td>Path</td><td>（空のまま）</td></tr>
+    <tr><td>Type</td><td><span class="mono-in">HTTP</span></td></tr>
+    <tr><td>URL</td><td><span class="mono-in">localhost:8000</span> <span class="tag">config.json の APP_PORT と同じ数字</span></td></tr>
+  </table>
+  <div class="warn" style="margin-top:14px;"><b>ここが合っていないと 502 エラー</b>になります。<br>
+    config.json の <span class="mono-in">APP_PORT</span> と、この <span class="mono-in">localhost:<b>8000</b></span> の数字を必ず一致させてください。</div>
+</div>
+
+<div class="step">
+  <div class="num">5</div>
+  <div class="step-body">
+    <b>WebSocket を有効にする</b>（チャットのリアルタイム通信に必要）<br>
+    同じ Public Hostname の <b>Additional application settings</b> &rarr; <b>TLS</b> や <b>HTTP Settings</b> の中に
+    <span class="mono-in">WebSocket</span> のトグルがあれば <b>ON</b> に。<br>
+    <span class="cm">※ Cloudflare は通常 WebSocket が既定で有効ですが、念のため確認。アカウント設定 &rarr; Network &rarr; WebSockets も ON。</span>
+  </div>
+</div>
+
+<!-- つながり図 -->
+<h2>PART 3：2つの数字を合わせる（最重要）</h2>
+<div class="diagram">
+  <div class="box-row">
+    <div class="b" style="border-color:var(--lime)">
+      <div class="bt">config.json</div>
+      <div class="bd">APP_PORT</div>
+      <div style="font-size:22px; font-weight:800; color:var(--lime); margin-top:4px;">8000</div>
+    </div>
+    <span class="harrow" style="font-size:26px;">=</span>
+    <div class="b" style="border-color:var(--cyan)">
+      <div class="bt">Cloudflare</div>
+      <div class="bd">Public Hostname の URL</div>
+      <div style="font-size:16px; font-weight:800; color:var(--cyan); margin-top:4px;">localhost:8000</div>
+    </div>
+  </div>
+  <p style="text-align:center; color:var(--dim); font-size:13px; margin-top:16px;">
+    この <b>8000</b> が両方で一致していれば、トンネルは正しくつながります。
+  </p>
+</div>
+
+<!-- 完成 -->
+<h2>PART 4：アップして確認</h2>
+<div class="step"><div class="num">1</div><div class="step-body">config.json を入れた <span class="mono-in">me-talk</span> フォルダを ZIP にする</div></div>
+<div class="step"><div class="num">2</div><div class="step-body">Discloud にアップロード（MIRAI ID と同じ要領）</div></div>
+<div class="step"><div class="num">3</div><div class="step-body">ログに次が出れば成功：<br>
+  <pre style="margin-top:8px;">INFO: Application startup complete.
+INFO: Uvicorn running on http://0.0.0.0:8000
+[cloudflared] トンネルを起動しました</pre></div></div>
+<div class="step"><div class="num">4</div><div class="step-body">ブラウザで <span class="mono-in">https://me.mirai-vps.jp/app</span> を開く &rarr; 起動画面が出れば公開成功！</div></div>
+
+<div class="ok" style="margin-top:20px;">
+<b>登録時の確認コードについて：</b>SMTP を設定していない場合、メールは飛びませんが、
+確認コードは <b>Discloud のログ</b>に <span class="mono-in">[mail] ... 確認コード(register): 123456</span> の形で出ます。
+それを入力すれば登録できます（テスト時はこれでOK）。
+</div>
+
+<!-- トラブル -->
+<h2>困ったとき</h2>
+<table>
+  <tr><th>症状</th><th>原因と対処</th></tr>
+  <tr><td>公開URLで 502</td><td>APP_PORT と Cloudflare の localhost:ポート が不一致。両方 8000 に</td></tr>
+  <tr><td>URLを開いても真っ白/つながらない</td><td>cloudflaredトークンが違う、またはトンネルが起動していない。ログ確認</td></tr>
+  <tr><td>チャットがリアルタイムで来ない</td><td>WebSocket が無効。Cloudflare の WebSocket 設定を ON</td></tr>
+  <tr><td>確認コードが来ない</td><td>SMTP未設定なら正常。Discloudのログにコードが出る</td></tr>
+  <tr><td>ビルドで落ちる</td><td>requirements.txt のDL失敗。ログを見て再アップ</td></tr>
+</table>
+
+<p style="text-align:center; color:var(--dim); font-size:12px; margin-top:40px;">
+Dev yuzuki_akrdev.ofc &nbsp;/&nbsp; うまくいかないときは Discloud のログをそのまま共有してください
+</p>
+
+</div>
+</body>
+</html>

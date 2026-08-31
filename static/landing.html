@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Me Talk - つながる、話せる、Me Talk。</title>
+<meta name="description" content="オープンチャット・DM・グローバルチャットで、あなたの「話したい」をもっと身近に。AIアシスタント Mirei や消えるメッセージ Me Talk Fade も。">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Me Talk">
+<meta property="og:title" content="Me Talk">
+<meta property="og:description" content="つながる、話せる、Me Talk。オープンチャット・DM・グローバルチャットで、あなたの「話したい」をもっと身近に。">
+<meta property="og:url" content="__BASE_URL__/">
+<meta property="og:image" content="__BASE_URL__/static/pwa/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Me Talk">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Me Talk">
+<meta name="twitter:description" content="つながる、話せる、Me Talk。オープンチャット・DM・グローバルチャットで、あなたの「話したい」をもっと身近に。">
+<meta name="twitter:image" content="__BASE_URL__/static/pwa/ogp.png">
+
+<meta name="theme-color" content="#34d399">
+<link rel="icon" href="/static/pwa/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="/static/pwa/apple-touch-icon.png?v=2">
+
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 38%, #0a1512, #000 72%);
+    color: #e6e9ef;
+    font-family: -apple-system, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: calc(28px + env(safe-area-inset-top, 0px)) 20px calc(28px + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+}
+.lp-logo { width: 118px; height: 118px; filter: drop-shadow(0 0 22px rgba(52,211,153,0.45)); }
+.lp-name {
+    font-size: 40px; font-weight: bold; margin-top: 16px; letter-spacing: 1px;
+    background: linear-gradient(100deg, #a3e635, #34d399, #22d3ee);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.lp-tag { font-size: 14px; color: #6b9080; margin-top: 8px; }
+.lp-feat { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 26px; max-width: 420px; }
+.lp-chip { font-size: 12px; color: #8b93a1; border: 1px solid #232b36; border-radius: 18px; padding: 7px 14px; background: #10161e; }
+.lp-btn {
+    display: inline-block; margin-top: 30px; padding: 14px 38px; border-radius: 12px;
+    background: linear-gradient(100deg, #34d399, #22d3ee); color: #04140d;
+    font-weight: bold; font-size: 16px; text-decoration: none;
+}
+.lp-links { margin-top: 26px; display: flex; gap: 18px; font-size: 12px; }
+.lp-links a { color: #6b7280; text-decoration: none; }
+.lp-brand { margin-top: 34px; display: flex; align-items: center; gap: 11px; opacity: 0.65; }
+.lp-brand img { height: 24px; width: auto; }
+.lp-sep { width: 1px; height: 18px; background: #2f3a48; }
+.lp-ver { font-size: 10px; color: #4b5563; margin-top: 9px; }
+</style>
+</head>
+<body>
+
+<img class="lp-logo" src="/static/pwa/metalk-mark.png" alt="Me Talk">
+<div class="lp-name">Me Talk</div>
+<div class="lp-tag">つながる、話せる、Me Talk。</div>
+
+<div class="lp-feat">
+<span class="lp-chip">オープンチャット</span>
+<span class="lp-chip">DM</span>
+<span class="lp-chip">グローバルチャット</span>
+<span class="lp-chip">AIアシスタント Mirei</span>
+<span class="lp-chip">Me Talk Fade</span>
+</div>
+
+<a class="lp-btn" href="/app">はじめる</a>
+
+<div class="lp-links">
+<a href="/legal/terms">利用規約</a>
+<a href="/legal/privacy">プライバシーポリシー</a>
+</div>
+
+<div class="lp-brand">
+<img src="/static/brand/mirai-mark.png" alt="MIRAI GROUP">
+<span class="lp-sep"></span>
+<img src="/static/brand/akr-dev.png" alt="AKR DEV corporation">
+</div>
+<div class="lp-ver" id="lp-ver">v0.1.0 (Tester)</div>
+
+<script>
+fetch("/api/app-info").then((r) => r.json()).then((info) => {
+    if (info && info.version) document.getElementById("lp-ver").textContent = info.version;
+}).catch(() => {});
+try {
+    if (localStorage.getItem("me_talk_token")) location.replace("/app");
+} catch (e) {}
+</script>
+
+</body>
+</html>
